@@ -69,8 +69,13 @@ foreach (var entity in athletes)
         continue;
     }
 
-    float? prevBestDistance = null;
-    int? prevBestTime = null;
+    activities = Deduplicate(activities);
+
+    float prevBestDistance = 0;
+    int prevBestTime = 0;
+    float prevTotalDistance = 0;
+    int prevTotalTime = 0;
+
     if (!config.UseFallback && config.PreviousPeriod is not null)
     {
         try
@@ -86,6 +91,8 @@ foreach (var entity in athletes)
             {
                 prevBestDistance = qualifying.Max(a => a.Distance);
                 prevBestTime = qualifying.Max(a => a.MovingTime);
+                prevTotalDistance = qualifying.Sum(a => a.Distance);
+                prevTotalTime = qualifying.Sum(a => a.MovingTime);
             }
         }
         catch { /* non-critical */ }
@@ -96,10 +103,11 @@ foreach (var entity in athletes)
         .Where(s => s.Points > 0)
         .ToList();
 
-    var total = scored.Sum(s => s.Points);
-    Console.WriteLine($"{scored.Count} activities, {total} pts");
+    var (periodBonus, periodBonusReason) = calculator.ScorePeriodTotalBonus(scored, prevTotalDistance, prevTotalTime);
+    var total = scored.Sum(s => s.Points) + periodBonus;
+    Console.WriteLine($"{scored.Count} activities, {total} pts{(periodBonus > 0 ? " (incl. period bonus)" : "")}");
 
-    results.Add(new AthleteResult(displayName, total, scored));
+    results.Add(new AthleteResult(displayName, total, scored, periodBonus, periodBonusReason));
 
     await Task.Delay(300); // stay within Strava rate limits
 }
@@ -107,3 +115,20 @@ foreach (var entity in athletes)
 reporter.PrintAndSave(results, config.Period.Start, config.Period.End);
 
 return 0;
+
+static List<StravaActivity> Deduplicate(List<StravaActivity> activities)
+{
+    var kept = new List<StravaActivity>();
+
+    foreach (var activity in activities.OrderByDescending(a => a.Distance))
+    {
+        var isDuplicate = kept.Any(k =>
+            k.SportType == activity.SportType &&
+            Math.Abs((k.StartDate - activity.StartDate).TotalMinutes) <= 5);
+
+        if (!isDuplicate)
+            kept.Add(activity);
+    }
+
+    return kept;
+}

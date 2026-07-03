@@ -4,16 +4,17 @@
   "StravaClientSecret": "<your-strava-client-secret>",
   "UseFallback": false,
   "Period": {
-    "Start": "2026-07-01",
-    "End": "2026-07-14"
+    "Start": "2026-06-15",
+    "End": "2026-06-28"
   },
   "PreviousPeriod": {
-    "Start": "2026-06-17",
-    "End": "2026-06-30"
+    "Start": "2026-06-01",
+    "End": "2026-06-14"
   },
   "Points": {
     "PrBonus": 2,
-    "PeriodBestBonus": 2,
+    "ActivityBestBonus": 2,
+    "PeriodTotalBonus": 2,
     "GroupBonus": 1,
     "RacePoints": 7
   }

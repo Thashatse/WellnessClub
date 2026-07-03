@@ -1,6 +1,5 @@
-@description('Short environment tag — used as a suffix on all resource names.')
-@allowed(['prod', 'dev'])
-param env string = 'prod'
+@description('Organisation name — used as a prefix on all resource names.')
+param orgName string = 'paymenow'
 
 @description('Azure region for all resources.')
 param location string = resourceGroup().location
@@ -19,8 +18,8 @@ param stravaRedirectUri string
 param stravaClubId string
 
 // ── Naming ────────────────────────────────────────────────────────────────────
-var appName = 'wellnessclub-${env}'
-var storageAccountName = 'wellnessclub${env}sa' // must be lowercase, max 24 chars
+var appName = '${orgName}-wellnessclub'
+var storageAccountName = '${orgName}wellnessclubsa' // must be lowercase, max 24 chars
 
 // ── Storage Account ───────────────────────────────────────────────────────────
 resource storageAccount 'Microsoft.Storage/storageAccounts@2023-05-01' = {

@@ -23,7 +23,8 @@ public class PeriodConfig
 public class PointsConfig
 {
     public int PrBonus { get; set; } = 2;
-    public int PeriodBestBonus { get; set; } = 2;
+    public int ActivityBestBonus { get; set; } = 2; // beat your best single activity from last period
+    public int PeriodTotalBonus { get; set; } = 2;  // beat your total distance/time from last period
     public int GroupBonus { get; set; } = 1;
     public int RacePoints { get; set; } = 7;
 }
