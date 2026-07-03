@@ -1,0 +1,9 @@
+<Solution>
+  <Project Path="WellnessClub.Api/WellnessClub.Api.csproj" />
+  <Project Path="WellnessClub.Shared/WellnessClub.Shared.csproj" />
+  <Project Path="WellnessClub.Sync/WellnessClub.Sync.csproj" />
+  <Folder Name="/infra/">
+    <File Path="infra/main.bicep" />
+    <File Path="infra/main.bicepparam" />
+  </Folder>
+</Solution>
