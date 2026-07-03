@@ -16,4 +16,10 @@
     <ProjectReference Include="..\WellnessClub.Shared\WellnessClub.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="sync-config.json" Condition="Exists('sync-config.json')">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
