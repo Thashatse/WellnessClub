@@ -5,7 +5,7 @@ public class SyncConfig
     public string StorageConnection { get; set; } = default!;
     public string StravaClientId { get; set; } = default!;
     public string StravaClientSecret { get; set; } = default!;
-    public bool UseFallback { get; set; } = false;
+    public string ClubId { get; set; } = "";
     public PeriodConfig Period { get; set; } = default!;
     public PeriodConfig? PreviousPeriod { get; set; }
     public PointsConfig Points { get; set; } = new();

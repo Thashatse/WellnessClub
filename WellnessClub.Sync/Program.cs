@@ -29,9 +29,11 @@ if (athletes.Count == 0)
     return 0;
 }
 
-Console.WriteLine($"Syncing {athletes.Count} athlete(s) for period {config.Period.Start} → {config.Period.End}");
+Console.WriteLine($"Syncing period {config.Period.Start} → {config.Period.End}");
 
 var results = new List<AthleteResult>();
+
+Console.WriteLine($"Syncing {athletes.Count} athlete(s)...");
 
 foreach (var entity in athletes)
 {
@@ -59,9 +61,7 @@ foreach (var entity in athletes)
     List<StravaActivity> activities;
     try
     {
-        activities = config.UseFallback
-            ? await fetcher.FetchClubActivitiesAsync(accessToken, config.Period.StartEpoch, config.Period.EndEpoch)
-            : await fetcher.FetchForAthleteAsync(accessToken, config.Period.StartEpoch, config.Period.EndEpoch);
+        activities = await fetcher.FetchForAthleteAsync(accessToken, config.Period.StartEpoch, config.Period.EndEpoch);
     }
     catch (Exception ex)
     {
@@ -76,7 +76,7 @@ foreach (var entity in athletes)
     float prevTotalDistance = 0;
     int prevTotalTime = 0;
 
-    if (!config.UseFallback && config.PreviousPeriod is not null)
+    if (config.PreviousPeriod is not null)
     {
         try
         {

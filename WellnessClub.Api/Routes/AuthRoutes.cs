@@ -32,11 +32,13 @@ public static class AuthRoutes
           <meta charset="utf-8">
           <meta name="viewport" content="width=device-width, initial-scale=1">
           <title>Paymenow Wellness Club</title>
+          <link rel="icon" type="image/png" href="/favicon-32.png">
+          <link rel="apple-touch-icon" href="/apple-touch-icon.png">
           <style>
             * { box-sizing: border-box; }
             body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; min-height: 100vh; margin: 0; background: #f0f4f8; display: flex; align-items: center; justify-content: center; padding: 1rem; }
             .card { background: white; padding: 2rem; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,.08); width: 100%; max-width: 480px; }
-            .logo { font-size: 2.5rem; margin-bottom: .75rem; }
+            .logo { width: 72px; height: 72px; margin-bottom: .75rem; }
             h1 { color: #1a1a1a; font-size: 1.4rem; margin: 0 0 .4rem; }
             .subtitle { color: #888; font-size: 1rem; margin: 0 0 1.5rem; line-height: 1.5; }
             h2 { font-size: 1rem; color: #333; margin: 1.25rem 0 .4rem; }
@@ -48,7 +50,7 @@ public static class AuthRoutes
         </head>
         <body>
           <div class="card">
-            <div class="logo">🏃</div>
+            <img class="logo" src="/mascot.png" alt="Wellness Club mascot">
             <h1>Paymenow Wellness Club</h1>
             <p class="subtitle">Connect your Strava account once and your activities will be tracked automatically for the bi-weekly leaderboard.</p>
 
@@ -83,6 +85,8 @@ public static class AuthRoutes
           <meta charset="utf-8">
           <meta name="viewport" content="width=device-width, initial-scale=1">
           <title>Paymenow Wellness Club</title>
+          <link rel="icon" type="image/png" href="/favicon-32.png">
+          <link rel="apple-touch-icon" href="/apple-touch-icon.png">
           <style>
             * { box-sizing: border-box; }
             body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; min-height: 100vh; margin: 0; background: #f0f4f8; display: flex; align-items: center; justify-content: center; padding: 1rem; }
@@ -110,6 +114,8 @@ public static class AuthRoutes
           <meta charset="utf-8">
           <meta name="viewport" content="width=device-width, initial-scale=1">
           <title>Paymenow Wellness Club</title>
+          <link rel="icon" type="image/png" href="/favicon-32.png">
+          <link rel="apple-touch-icon" href="/apple-touch-icon.png">
           <style>
             * { box-sizing: border-box; }
             body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; min-height: 100vh; margin: 0; background: #f0f4f8; display: flex; align-items: center; justify-content: center; padding: 1rem; }

@@ -38,20 +38,4 @@ public class ActivityFetcher(HttpClient http)
 
         return activities;
     }
-
-    public async Task<List<StravaActivity>> FetchClubActivitiesAsync(string accessToken, long after, long before)
-    {
-        http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-
-        var url = $"https://www.strava.com/api/v3/clubs/1374944/activities?per_page=200";
-        var response = await http.GetAsync(url);
-        response.EnsureSuccessStatusCode();
-
-        var activities = JsonSerializer.Deserialize<List<StravaActivity>>(
-            await response.Content.ReadAsStringAsync(), JsonOpts) ?? [];
-
-        return activities
-            .Where(a => a.StartDate.ToUnixTimeSeconds() >= after && a.StartDate.ToUnixTimeSeconds() <= before)
-            .ToList();
-    }
 }

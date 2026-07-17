@@ -19,6 +19,8 @@ builder.Services.AddScoped<StravaOAuthService>();
 
 var app = builder.Build();
 
+app.UseStaticFiles();
+
 app.MapAuthRoutes();
 
 app.Run();

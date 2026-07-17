@@ -44,14 +44,27 @@ public class StravaOAuthService(IHttpClientFactory httpFactory, IConfiguration c
         clubCheckClient.DefaultRequestHeaders.Authorization =
             new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", accessToken);
 
-        var clubsResponse = await clubCheckClient.GetAsync("https://www.strava.com/api/v3/athlete/clubs");
-        if (!clubsResponse.IsSuccessStatusCode)
-            return (null, "Could not verify club membership.");
-
-        var clubs = JsonDocument.Parse(await clubsResponse.Content.ReadAsStringAsync()).RootElement;
         var clubId = config["Strava:ClubId"];
-        var isMember = clubs.EnumerateArray()
-            .Any(c => c.GetProperty("id").GetInt64().ToString() == clubId);
+        var isMember = false;
+        const int perPage = 200;
+        for (var page = 1; ; page++)
+        {
+            var clubsResponse = await clubCheckClient.GetAsync(
+                $"https://www.strava.com/api/v3/athlete/clubs?page={page}&per_page={perPage}");
+            if (!clubsResponse.IsSuccessStatusCode)
+                return (null, "Could not verify club membership.");
+
+            var clubs = JsonDocument.Parse(await clubsResponse.Content.ReadAsStringAsync()).RootElement;
+            var pageClubs = clubs.EnumerateArray().ToList();
+            if (pageClubs.Any(c => c.GetProperty("id").GetInt64().ToString() == clubId))
+            {
+                isMember = true;
+                break;
+            }
+
+            if (pageClubs.Count < perPage)
+                break;
+        }
 
         if (!isMember)
             return (null, "You are not a member of the Paymenow Wellness Club on Strava.");

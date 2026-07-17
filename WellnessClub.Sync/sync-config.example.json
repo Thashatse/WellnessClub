@@ -2,14 +2,14 @@
   "StorageConnection": "DefaultEndpointsProtocol=https;AccountName=...;AccountKey=...;EndpointSuffix=core.windows.net",
   "StravaClientId": "<your-strava-client-id>",
   "StravaClientSecret": "<your-strava-client-secret>",
-  "UseFallback": false,
-  "Period": {
-    "Start": "2026-06-15",
-    "End": "2026-06-28"
+  "ClubId": "",
+  "Period": { 
+    "Start": "2026-06-26",
+    "End": "2026-07-09"
   },
   "PreviousPeriod": {
-    "Start": "2026-06-01",
-    "End": "2026-06-14"
+    "Start": "2026-06-12",
+    "End": "2026-06-25"
   },
   "Points": {
     "PrBonus": 2,
