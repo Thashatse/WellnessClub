@@ -1,11 +1,11 @@
 using Azure;
 using Azure.Data.Tables;
 
-namespace WellnessClub.Shared;
+namespace WellnessClub.Shared.Models;
 
 public class AthleteEntity : ITableEntity
 {
-    public string PartitionKey { get; set; } = "paymenow";
+    public string PartitionKey { get; set; } = default!;
     public string RowKey { get; set; } = default!; // Strava athlete ID
     public string DisplayName { get; set; } = default!;
     public string AccessToken { get; set; } = default!;

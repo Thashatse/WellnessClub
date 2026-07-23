@@ -1,0 +1,24 @@
+<div class="card wide">
+  <img class="logo" src="/mascot.png" alt="{{CompanyName}} mascot">
+  <h1>{{CompanyName}} Wellness Club — Dashboard</h1>
+  {{Banner}}
+  <form method="post" action="/dashboard/reports">
+    <label for="periodStart">Period</label>
+    <select id="periodStart" name="periodStart">
+      {{PeriodOptions}}
+    </select>
+    <button class="btn" type="submit">View / Generate Report</button>
+  </form>
+
+  <h1 style="margin-top: 2rem; font-size: 1.1rem;">Saved reports</h1>
+  <ul class="reports">
+    {{SavedReports}}
+  </ul>
+  {{PurgeButton}}
+
+  <p style="margin-top: 1.5rem;">
+    <a href="/dashboard/employees">Registered employees</a>
+    &nbsp;·&nbsp;
+    <a href="/dashboard/settings">Scoring settings</a>
+  </p>
+</div>

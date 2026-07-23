@@ -1,0 +1,17 @@
+<div class="card wide">
+  <img class="logo" src="/mascot.png" alt="{{CompanyName}} mascot">
+  <h1>{{PeriodLabel}}</h1>
+  <table class="summary-table">
+    <thead><tr>{{HeaderCells}}</tr></thead>
+    <tbody>
+      {{BodyRows}}
+    </tbody>
+  </table>
+  {{DetailSections}}
+  <p style="margin-top: 1.5rem;">
+    <a href="/dashboard/reports/{{FileBaseName}}.csv">Download CSV</a>
+    {{MarkdownLink}}
+    &nbsp;·&nbsp;
+    <a href="/dashboard">Back to dashboard</a>
+  </p>
+</div>

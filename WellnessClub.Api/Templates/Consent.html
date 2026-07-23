@@ -1,0 +1,27 @@
+<div class="center">
+  <div class="card narrow">
+    <img class="logo" src="/mascot.png" alt="{{CompanyName}} mascot">
+    <h1>{{CompanyName}} Wellness Club</h1>
+    <p class="subtitle">Connect your Strava account once and your activities will be tracked automatically for the bi-weekly leaderboard.</p>
+
+    <h2>What we will read from Strava</h2>
+    <ul>
+      <li>Activity name, date, and sport type</li>
+      <li>Duration and distance</li>
+      <li>Whether the activity was a personal record (PR)</li>
+      <li>Whether others participated (group activity flag)</li>
+    </ul>
+
+    <h2>What we will store</h2>
+    <ul>
+      <li>Your Strava athlete ID and display name</li>
+      <li>An access token and refresh token to read your future activities</li>
+    </ul>
+
+    <div class="notice">
+      We will <strong>never</strong> post to your Strava, read your private activities, or share your data outside {{CompanyName}}.
+    </div>
+
+    <a class="btn btn-strava" href="/auth/strava/go">Connect with Strava</a>
+  </div>
+</div>

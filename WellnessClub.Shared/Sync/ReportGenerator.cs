@@ -1,17 +1,17 @@
-namespace WellnessClub.Sync.Services;
+using WellnessClub.Shared.Models;
 
-public record AthleteResult(string DisplayName, int TotalPoints, List<ScoredActivity> Activities, int PeriodBonus, string? PeriodBonusReason);
+namespace WellnessClub.Shared.Sync;
 
 public class ReportGenerator
 {
-    public void PrintAndSave(List<AthleteResult> results, string periodStart, string periodEnd)
+    public void PrintAndSave(List<AthleteResult> results, string companyName, string periodStart, string periodEnd)
     {
         var active = results.Where(r => r.TotalPoints > 0).OrderByDescending(r => r.TotalPoints).ToList();
         var excluded = results.Where(r => r.TotalPoints == 0).OrderBy(r => r.DisplayName).ToList();
 
         Console.WriteLine();
         Console.WriteLine($"╔══════════════════════════════════════════════════════════╗");
-        Console.WriteLine($"║      PAYMENOW WELLNESS CLUB — {periodStart} to {periodEnd}      ║");
+        Console.WriteLine($"║      {companyName.ToUpperInvariant()} WELLNESS CLUB — {periodStart} to {periodEnd}      ║");
         Console.WriteLine($"╠══════════════════════════════════════════════════════════╣");
         Console.WriteLine($"║  #  {"Athlete",-28} {"Points",6}  {"Activities",10}  ║");
         Console.WriteLine($"╠══════════════════════════════════════════════════════════╣");
@@ -38,23 +38,27 @@ public class ReportGenerator
         if (reviewItems.Count > 0)
         {
             Console.WriteLine();
-            Console.WriteLine("⚑ GROUP ACTIVITIES TO VERIFY (confirm PMN colleague was involved):");
+            Console.WriteLine("⚑ GROUP ACTIVITIES TO VERIFY (confirm a colleague was involved):");
             foreach (var (name, scored) in reviewItems)
                 Console.WriteLine($"  • {name} — {scored.Activity.Name} on {scored.Activity.StartDate:yyyy-MM-dd}");
         }
 
-        SaveMarkdown(active, excluded, periodStart, periodEnd, reviewItems);
+        var path = $"report-{periodStart}-{periodEnd}.md";
+        File.WriteAllText(path, BuildMarkdown(results, companyName, periodStart, periodEnd));
+        Console.WriteLine($"\nReport saved to {path}");
     }
 
-    private static void SaveMarkdown(
-        List<AthleteResult> active, List<AthleteResult> excluded,
-        string start, string end,
-        List<(string DisplayName, ScoredActivity Activity)> reviewItems)
+    public static string BuildMarkdown(List<AthleteResult> results, string companyName, string start, string end)
     {
-        var path = $"report-{start}-{end}.md";
+        var active = results.Where(r => r.TotalPoints > 0).OrderByDescending(r => r.TotalPoints).ToList();
+        var excluded = results.Where(r => r.TotalPoints == 0).OrderBy(r => r.DisplayName).ToList();
+        var reviewItems = active
+            .SelectMany(r => r.Activities.Where(a => a.NeedsReview).Select(a => (r.DisplayName, a)))
+            .ToList();
+
         var lines = new List<string>
         {
-            $"# Paymenow Wellness Club — {start} to {end}",
+            $"# {companyName} Wellness Club — {start} to {end}",
             "",
             "## Leaderboard",
             "",
@@ -108,8 +112,8 @@ public class ReportGenerator
                 lines.Add($"| {scored.Activity.Name}{flag} | {scored.Activity.StartDate:yyyy-MM-dd} | {scored.Activity.SportType} | {distance} | {time} | {scored.Points} | {breakdown} |");
             }
 
-            if (r.PeriodBonus > 0)
-                lines.Add($"| *(Period total bonus)* | — | — | — | — | {r.PeriodBonus} | {r.PeriodBonusReason} |");
+            foreach (var bonus in r.PeriodBonuses)
+                lines.Add($"| *(Period bonus)* | — | — | — | — | {bonus.Points} | {bonus.Reason} |");
 
             var totalDist = r.Activities.Sum(a => a.Activity.Distance);
             var totalTime = TimeSpan.FromSeconds(r.Activities.Sum(a => a.Activity.MovingTime));
@@ -125,13 +129,12 @@ public class ReportGenerator
             lines.Add("");
             lines.Add("## ⚑ Group Activities to Verify");
             lines.Add("");
-            lines.Add("Confirm a PMN colleague was involved before awarding the group bonus.");
+            lines.Add("Confirm a colleague was involved before awarding the group bonus.");
             lines.Add("");
             foreach (var (name, scored) in reviewItems)
                 lines.Add($"- **{name}** — {scored.Activity.Name} ({scored.Activity.StartDate:yyyy-MM-dd})");
         }
 
-        File.WriteAllLines(path, lines);
-        Console.WriteLine($"\nReport saved to {path}");
+        return string.Join('\n', lines);
     }
 }

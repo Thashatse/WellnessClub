@@ -1,3 +1,4 @@
+using System.Net;
 using WellnessClub.Api.Services;
 
 namespace WellnessClub.Api.Routes;
@@ -6,132 +7,40 @@ public static class AuthRoutes
 {
     public static void MapAuthRoutes(this WebApplication app)
     {
-        app.MapGet("/auth/strava", () => Results.Content(ConsentPage(), "text/html"));
+        app.MapGet("/auth/strava", (IConfiguration config) =>
+            Results.Content(ConsentPage(CompanyName(config)), "text/html"));
 
         app.MapGet("/auth/strava/go", (StravaOAuthService oauth) =>
             Results.Redirect(oauth.BuildAuthoriseUrl()));
 
-        app.MapGet("/auth/strava/callback", async (string? code, string? error, StravaOAuthService oauth) =>
+        app.MapGet("/auth/strava/callback", async (string? code, string? error, StravaOAuthService oauth, IConfiguration config) =>
         {
+            var companyName = CompanyName(config);
+
             if (error is not null || code is null)
-                return Results.Content(ErrorPage("Strava authorisation was denied or cancelled."), "text/html");
+                return Results.Content(ErrorPage(companyName, "Strava authorisation was denied or cancelled."), "text/html");
 
             var (athlete, exchangeError) = await oauth.ExchangeCodeAsync(code);
 
             if (exchangeError is not null)
-                return Results.Content(ErrorPage(exchangeError), "text/html");
+                return Results.Content(ErrorPage(companyName, exchangeError), "text/html");
 
-            return Results.Content(SuccessPage(athlete!.DisplayName), "text/html");
+            return Results.Content(SuccessPage(companyName, athlete!.DisplayName), "text/html");
         });
     }
 
-    private static string ConsentPage() => """
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1">
-          <title>Paymenow Wellness Club</title>
-          <link rel="icon" type="image/png" href="/favicon-32.png">
-          <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-          <style>
-            * { box-sizing: border-box; }
-            body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; min-height: 100vh; margin: 0; background: #f0f4f8; display: flex; align-items: center; justify-content: center; padding: 1rem; }
-            .card { background: white; padding: 2rem; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,.08); width: 100%; max-width: 480px; }
-            .logo { width: 72px; height: 72px; margin-bottom: .75rem; }
-            h1 { color: #1a1a1a; font-size: 1.4rem; margin: 0 0 .4rem; }
-            .subtitle { color: #888; font-size: 1rem; margin: 0 0 1.5rem; line-height: 1.5; }
-            h2 { font-size: 1rem; color: #333; margin: 1.25rem 0 .4rem; }
-            ul { color: #555; font-size: 1rem; padding-left: 1.25rem; margin: 0 0 .5rem; line-height: 1.8; }
-            .notice { background: #f8f9fa; border-left: 3px solid #FC4C02; padding: .85rem 1rem; border-radius: 0 8px 8px 0; font-size: .95rem; color: #555; margin: 1.25rem 0; line-height: 1.5; }
-            .btn { display: block; width: 100%; padding: 1rem; background: #FC4C02; color: white; text-decoration: none; text-align: center; border-radius: 10px; font-size: 1.05rem; font-weight: 600; margin-top: 1.5rem; }
-            .btn:active { background: #e03e00; }
-          </style>
-        </head>
-        <body>
-          <div class="card">
-            <img class="logo" src="/mascot.png" alt="Wellness Club mascot">
-            <h1>Paymenow Wellness Club</h1>
-            <p class="subtitle">Connect your Strava account once and your activities will be tracked automatically for the bi-weekly leaderboard.</p>
+    private static string CompanyName(IConfiguration config) => config["CompanyName"]!;
 
-            <h2>What we will read from Strava</h2>
-            <ul>
-              <li>Activity name, date, and sport type</li>
-              <li>Duration and distance</li>
-              <li>Whether the activity was a personal record (PR)</li>
-              <li>Whether others participated (group activity flag)</li>
-            </ul>
+    private static string ConsentPage(string companyName) => TemplateRenderer.RenderPage(
+        $"{companyName} Wellness Club", "Consent.html",
+        ("CompanyName", WebUtility.HtmlEncode(companyName)));
 
-            <h2>What we will store</h2>
-            <ul>
-              <li>Your Strava athlete ID and display name</li>
-              <li>An access token and refresh token to read your future activities</li>
-            </ul>
+    private static string SuccessPage(string companyName, string name) => TemplateRenderer.RenderPage(
+        $"{companyName} Wellness Club", "Success.html",
+        ("CompanyName", WebUtility.HtmlEncode(companyName)),
+        ("Name", WebUtility.HtmlEncode(name)));
 
-            <div class="notice">
-              We will <strong>never</strong> post to your Strava, read your private activities, or share your data outside Paymenow.
-            </div>
-
-            <a class="btn" href="/auth/strava/go">Connect with Strava</a>
-          </div>
-        </body>
-        </html>
-        """;
-
-    private static string SuccessPage(string name) => $$"""
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1">
-          <title>Paymenow Wellness Club</title>
-          <link rel="icon" type="image/png" href="/favicon-32.png">
-          <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-          <style>
-            * { box-sizing: border-box; }
-            body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; min-height: 100vh; margin: 0; background: #f0f4f8; display: flex; align-items: center; justify-content: center; padding: 1rem; }
-            .card { background: white; padding: 2rem; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,.08); text-align: center; width: 100%; max-width: 420px; }
-            .icon { font-size: 3.5rem; }
-            h1 { color: #1a1a1a; font-size: 1.4rem; margin: 1rem 0 .5rem; }
-            p { color: #555; font-size: 1rem; line-height: 1.6; margin: .5rem 0; }
-          </style>
-        </head>
-        <body>
-          <div class="card">
-            <div class="icon">✅</div>
-            <h1>You're in, {{name}}!</h1>
-            <p>Your Strava account is linked to the Paymenow Wellness Club. Your activities will be tracked automatically each competition period.</p>
-            <p>You can close this tab.</p>
-          </div>
-        </body>
-        </html>
-        """;
-
-    private static string ErrorPage(string message) => $$"""
-        <!DOCTYPE html>
-        <html lang="en">
-        <head>
-          <meta charset="utf-8">
-          <meta name="viewport" content="width=device-width, initial-scale=1">
-          <title>Paymenow Wellness Club</title>
-          <link rel="icon" type="image/png" href="/favicon-32.png">
-          <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-          <style>
-            * { box-sizing: border-box; }
-            body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; min-height: 100vh; margin: 0; background: #f0f4f8; display: flex; align-items: center; justify-content: center; padding: 1rem; }
-            .card { background: white; padding: 2rem; border-radius: 16px; box-shadow: 0 4px 24px rgba(0,0,0,.08); text-align: center; width: 100%; max-width: 420px; }
-            .icon { font-size: 3.5rem; }
-            h1 { color: #1a1a1a; font-size: 1.4rem; margin: 1rem 0 .5rem; }
-            p { color: #555; font-size: 1rem; line-height: 1.6; }
-          </style>
-        </head>
-        <body>
-          <div class="card">
-            <div class="icon">❌</div>
-            <h1>Connection failed</h1>
-            <p>{{message}}</p>
-          </div>
-        </body>
-        </html>
-        """;
+    private static string ErrorPage(string companyName, string message) => TemplateRenderer.RenderPage(
+        $"{companyName} Wellness Club", "Error.html",
+        ("Message", WebUtility.HtmlEncode(message)));
 }

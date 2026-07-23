@@ -20,6 +20,9 @@
     <None Update="sync-config.json" Condition="Exists('sync-config.json')">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Update="club-config.json" Condition="Exists('club-config.json')">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

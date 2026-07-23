@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace WellnessClub.Shared;
+namespace WellnessClub.Shared.Models;
 
 public class StravaActivity
 {

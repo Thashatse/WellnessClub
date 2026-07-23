@@ -17,4 +17,10 @@
     <ProjectReference Include="..\WellnessClub.Shared\WellnessClub.Shared.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Content Include="Templates\**\*.html">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

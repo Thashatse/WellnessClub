@@ -1,16 +1,13 @@
-using WellnessClub.Shared;
-using WellnessClub.Sync;
+using WellnessClub.Shared.Models;
 
-namespace WellnessClub.Sync.Services;
-
-public record ScoredActivity(StravaActivity Activity, int Points, List<string> Reasons, bool NeedsReview);
+namespace WellnessClub.Shared.Sync;
 
 public class PointsCalculator(PointsConfig config)
 {
     private const int BaseMinSeconds = 20 * 60;
     private const float BaseMinMetres = 5000f;
 
-    public ScoredActivity Score(StravaActivity activity, float prevBestDistance, int prevBestTime)
+    public ScoredActivity Score(StravaActivity activity)
     {
         var reasons = new List<string>();
         var needsReview = false;
@@ -27,36 +24,28 @@ public class PointsCalculator(PointsConfig config)
             points += config.RacePoints;
             reasons.Add($"Race (+{config.RacePoints} pts)");
         }
-        else
+        else if (activity.AthleteCount > 1)
         {
-            if (activity.PrCount > 0)
-            {
-                points += config.PrBonus;
-                reasons.Add($"Strava PR (+{config.PrBonus} pts)");
-            }
-
-            if (config.ActivityBestBonus > 0 && prevBestDistance > 0 && activity.Distance > prevBestDistance)
-            {
-                points += config.ActivityBestBonus;
-                reasons.Add($"Beat previous period best distance ({activity.Distance / 1000:F1} km vs {prevBestDistance / 1000:F1} km) (+{config.ActivityBestBonus} pts)");
-            }
-            else if (config.ActivityBestBonus > 0 && prevBestTime > 0 && activity.MovingTime > prevBestTime)
-            {
-                var curr = TimeSpan.FromSeconds(activity.MovingTime);
-                var prev = TimeSpan.FromSeconds(prevBestTime);
-                points += config.ActivityBestBonus;
-                reasons.Add($"Beat previous period best time ({(int)curr.TotalHours}h {curr.Minutes:D2}m vs {(int)prev.TotalHours}h {prev.Minutes:D2}m) (+{config.ActivityBestBonus} pts)");
-            }
-
-            if (activity.AthleteCount > 1)
-            {
-                points += config.GroupBonus;
-                reasons.Add($"Group activity (+{config.GroupBonus} pt) ⚑ verify PMN colleague");
-                needsReview = true;
-            }
+            points += config.GroupBonus;
+            reasons.Add($"Group activity (+{config.GroupBonus} pt) ⚑ verify colleague");
+            needsReview = true;
         }
 
         return new ScoredActivity(activity, points, reasons, needsReview);
+    }
+
+    public (int Bonus, string? Reason) ScorePrBonus(List<ScoredActivity> scored)
+    {
+        if (config.PrBonus == 0) return (0, null);
+
+        var prActivity = scored
+            .Where(s => s.Points > 0 && s.Activity.WorkoutType != 1 && s.Activity.PrCount > 0)
+            .OrderByDescending(s => s.Activity.StartDate)
+            .FirstOrDefault();
+
+        return prActivity is null
+            ? (0, null)
+            : (config.PrBonus, $"Strava PR this period ({prActivity.Activity.Name} on {prActivity.Activity.StartDate:yyyy-MM-dd}) (+{config.PrBonus} pts)");
     }
 
     public (int Bonus, string? Reason) ScorePeriodTotalBonus(

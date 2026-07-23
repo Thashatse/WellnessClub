@@ -1,0 +1,12 @@
+{
+  "CycleAnchor": "2026-01-09",
+  "CycleLengthDays": 14,
+  "ClubId": "123456789",
+  "MaxConcurrency": 8,
+  "Points": {
+    "PrBonus": 1,
+    "PeriodTotalBonus": 2,
+    "GroupBonus": 1,
+    "RacePoints": 7
+  }
+}

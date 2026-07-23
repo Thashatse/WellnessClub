@@ -59,5 +59,18 @@ nunit-*.xml
 # Secrets
 appsettings.Development.json
 sync-config.json
+club-config.json
 report-*.md
 infra/main.bicepparam
+
+# Branding — logo/favicons are this org's own assets, not part of the template
+WellnessClub.Api/wwwroot/
+Wellness Club Mascot.png
+
+# Manual deploy artifacts — these embed appsettings.Development.json (real secrets) and wwwroot
+# (this org's branding) when built, so they must never be added regardless of build folder name
+publish/
+*.zip
+
+# IDE user-specific state (not shared project config)
+*.DotSettings.user

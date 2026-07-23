@@ -1,0 +1,21 @@
+<div class="card wide">
+  <img class="logo" src="/mascot.png" alt="{{CompanyName}} mascot">
+  <h1>Scoring settings</h1>
+  {{Banner}}
+  <form method="post" action="/dashboard/settings">
+    <label for="prBonus">PR bonus (once per period, if any activity had a Strava PR)</label>
+    <input type="number" min="0" step="1" id="prBonus" name="prBonus" value="{{PrBonus}}">
+
+    <label for="periodTotalBonus">Period total bonus (beat your total distance/time from last period)</label>
+    <input type="number" min="0" step="1" id="periodTotalBonus" name="periodTotalBonus" value="{{PeriodTotalBonus}}">
+
+    <label for="groupBonus">Group activity bonus</label>
+    <input type="number" min="0" step="1" id="groupBonus" name="groupBonus" value="{{GroupBonus}}">
+
+    <label for="racePoints">Race points</label>
+    <input type="number" min="0" step="1" id="racePoints" name="racePoints" value="{{RacePoints}}">
+
+    <button class="btn" type="submit">Save</button>
+  </form>
+  <p style="margin-top: 1.5rem;"><a href="/dashboard">Back to dashboard</a></p>
+</div>
