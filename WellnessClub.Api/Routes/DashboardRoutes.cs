@@ -260,7 +260,7 @@ public static class DashboardRoutes
         var companyName = CompanyName(config);
         var banner = error ? Banner("error", "Incorrect password.") : "";
 
-        return TemplateRenderer.RenderPage($"{companyName} Wellness Club — Dashboard", "Login.html",
+        return TemplateRenderer.RenderPage($"{companyName} Wellness Club Dashboard", "Login.html",
             ("CompanyName", WebUtility.HtmlEncode(companyName)),
             ("ErrorBanner", banner));
     }
@@ -338,7 +338,7 @@ public static class DashboardRoutes
 
         var purgeButton = existingReports.Count == 0 ? "" : TemplateRenderer.Render("Partials/PurgeButton.html");
 
-        return TemplateRenderer.RenderPage($"{companyName} Wellness Club — Dashboard", "Dashboard.html",
+        return TemplateRenderer.RenderPage($"{companyName} Wellness Club Dashboard", "Dashboard.html",
             ("CompanyName", WebUtility.HtmlEncode(companyName)),
             ("Banner", banner),
             ("PeriodOptions", options),
